@@ -1,0 +1,17 @@
+<resources>
+    <string name="stringAppName">SocialPocket</string>
+    <string name="inputUsername">Username</string>
+    <string name="inputPassword">Password</string>
+    <string name="buttonLogin">Login now</string>
+    <string name="forgotPassword">Forgot your password?</string>
+    <string name="cameraLogin">Login with face recognition</string>
+    <string name="divider">or</string>
+    <string name="singup">Dont have an account?</string>
+    <string name="forgotPasswordText">Enter your email below to receive a reseted password</string>
+    <string name="forgotPasswordTitle">Forgot Password</string>
+    <string name="email">Email</string>
+    <string name="submit">Submit</string>
+    <string name="register">Registration</string>
+    <string name="retype">Retype password</string>
+    <string name="buttonRegister">Register now</string>
+</resources>
