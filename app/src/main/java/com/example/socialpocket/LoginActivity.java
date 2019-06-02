@@ -22,6 +22,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.example.socialpocket.MyApplication.IP;
+
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -41,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(!username.isEmpty() && !password.isEmpty()) {
                     try {
-                        final String url = "https://164.8.160.54:44304/api/Account/Login";
+                        final String url = "https://"+ IP + "/api/Account/Login";
 
                         OkHttpClient client = new OkHttpClient();
                         RequestBody body = new FormBody.Builder()

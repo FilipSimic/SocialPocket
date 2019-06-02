@@ -27,6 +27,7 @@ public class MyApplication extends Application
 {
     private static final String TAG = "MyApplication";
     public static final String CHANNEL_ID = "MyChannel";
+    public static final String IP = "192.168.1.69";
 
     private String idApp;
     private ArrayList<Post> posts;
