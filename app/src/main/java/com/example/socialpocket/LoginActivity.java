@@ -5,7 +5,7 @@ import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.method.PasswordTransformationMethod;
+
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,65 +14,86 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import static com.example.socialpocket.MyApplication.IP;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Principal;
+import java.security.PublicKey;
+import java.security.SignatureException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+
+import static com.example.socialpocket.ApiInterface.URL;
+import static org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private ApiInterface api;
+    private EditText user;
+    private EditText pass;
+    private MyApplication app;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        user = findViewById(R.id.username);
+        pass = findViewById(R.id.password);
+
+        app = (MyApplication)getApplication();
+
+        Gson gson = new GsonBuilder().setLenient().create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(URL)
+                .client(getUnsafeOkHttpClient())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        api = retrofit.create(ApiInterface.class);
+
         Button login = findViewById(R.id.btn_login);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                EditText user = findViewById(R.id.username);
-                EditText pass = findViewById(R.id.password);
-
+            public void onClick(final View v) {
                 String username = user.getText().toString();
                 String password = pass.getText().toString();
 
                 if(!username.isEmpty() && !password.isEmpty()) {
-                    try {
-                        final String url = "https://"+ IP + "/api/Account/Login";
-
-                        OkHttpClient client = new OkHttpClient();
-                        RequestBody body = new FormBody.Builder()
-                                .add("Username", username)
-                                .add("Password", password)
-                                .build();
-
-                        Request request = new Request.Builder()
-                                .url(url)
-                                .post(body)
-                                .header("content-type", "application/json")
-                                .build();
-
-                        Response response = client.newCall(request).execute();
-                        String res = response.body().string();
-                        String test = response.toString();
-                        Toast.makeText(v.getContext(), res, Toast.LENGTH_LONG).show();
-                        Toast.makeText(v.getContext(), test, Toast.LENGTH_LONG).show();
-
-                        if(res == "Successful") {
-                            startActivity(new Intent(getBaseContext(), MainActivity.class));
-                        } else {
-                            Toast.makeText(v.getContext(), "Wrong username or password", Toast.LENGTH_LONG).show();
-                            user.setText("");
-                            pass.setText("");
+                    //login(username, password);
+                    List<User> users = app.getUsers();
+                    for(User u : users) {
+                        if (username == u.getUsername() && password == u.getPassword()) {
+                            startActivity(new Intent(getBaseContext(), SyncActivity.class));
                         }
-                    } catch(Exception ex) {
-                        Toast.makeText(v.getContext(), ex.toString(), Toast.LENGTH_LONG).show();
-                        Toast.makeText(v.getContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     user.setText("");
@@ -125,5 +146,76 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(getBaseContext(), FaceLoginActivity.class));
             }
         });
+    }
+
+    private void login(String username, String password) {
+
+        Call<String> callLogin = api.login(new User(username, password, "/"));
+
+        callLogin.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if(!response.isSuccessful())
+                {
+                    try {
+                    Toast.makeText(LoginActivity.this, "Napaka: " + response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+
+                String res = response.body();
+                Toast.makeText(LoginActivity.this, "onResponse: " + res, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Napaka onFailure(): " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public static OkHttpClient getUnsafeOkHttpClient() {
+        try {
+            // Create a trust manager that does not validate certificate chains
+            final TrustManager[] trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
+
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
+
+                        @Override
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new java.security.cert.X509Certificate[]{};
+                        }
+                    }
+            };
+
+            // Install the all-trusting trust manager
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+            builder.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            OkHttpClient okHttpClient = builder.build();
+            return okHttpClient;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

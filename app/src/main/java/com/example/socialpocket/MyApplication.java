@@ -21,16 +21,17 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class MyApplication extends Application
 {
     private static final String TAG = "MyApplication";
     public static final String CHANNEL_ID = "MyChannel";
-    public static final String IP = "192.168.1.69";
 
     private String idApp;
     private ArrayList<Post> posts;
+    private ArrayList<User> users;
 
     public void onCreate()
     {
@@ -39,6 +40,7 @@ public class MyApplication extends Application
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         idApp = pref.getString("idApp", "");
         posts = new ArrayList<>();
+        users = new ArrayList<>();
 
         if (idApp.equals("")) {
             idApp = UUID.randomUUID().toString().replace("-", "");
@@ -50,6 +52,10 @@ public class MyApplication extends Application
         posts.add(new Post(idApp, "test", "asd", "dd"));
         posts.add(new Post(idApp, "test2", "asd", "dd"));
         posts.add(new Post(idApp, "test3", "asd", "dd"));
+
+        users.add(new User("Filip", "admin", "filip@gmail.com"));
+        users.add(new User("Niko","lilass", "niko@gmail.com"));
+        users.add(new User("Test", "asd","dd@aa"));
 
         createChannel();
     }
@@ -134,4 +140,14 @@ public class MyApplication extends Application
     }
 
     public String getIdApp() { return idApp; }
+
+    public List<User> getUsers() { return users; }
+
+    public void changePassword(int index, String newPass) {
+        users.get(index).setPassword(newPass);
+    }
+
+    public void register(String user, String pass, String email) {
+        users.add(new User(user, pass, email));
+    }
 }

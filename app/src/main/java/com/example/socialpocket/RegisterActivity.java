@@ -17,14 +17,16 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.example.socialpocket.MyApplication.IP;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private MyApplication app;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        app = (MyApplication) getApplication();
 
         final EditText username = findViewById(R.id.username);
         final EditText password = findViewById(R.id.password);
@@ -81,36 +83,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if(!u.isEmpty() && !p.isEmpty() && !e.isEmpty() && !r.isEmpty()) {
                     if(e == r) {
-                        try {
-                            final String url = "https://" + IP + "/api/Account/Register";
-
-                            OkHttpClient client = new OkHttpClient();
-                            RequestBody body = new FormBody.Builder()
-                                    .add("Username", u)
-                                    .add("Password", p)
-                                    .add("Email", e)
-                                    .build();
-
-                            Request request = new Request.Builder()
-                                    .url(url)
-                                    .post(body)
-                                    .header("content-type", "application/json")
-                                    .build();
-
-                            Response response = client.newCall(request).execute();
-                            String res = response.body().string();
-                            String test = response.toString();
-                            Toast.makeText(v.getContext(), res, Toast.LENGTH_LONG).show();
-                            Toast.makeText(v.getContext(), test, Toast.LENGTH_LONG).show();
-
-                            if (res == "Successful") {
-                                startActivity(new Intent(getBaseContext(), LoginActivity.class));
-                            } else {
-                                Toast.makeText(v.getContext(), "Email or username alredy exist!", Toast.LENGTH_LONG).show();
-                            }
-                        } catch (Exception ex) {
-                            Toast.makeText(v.getContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
-                        }
+                        //register(v, u, p ,e);
+                        app.register(u, p, e);
                     } else {
                         Toast.makeText(v.getContext(), "Password and retyped password dont match", Toast.LENGTH_LONG).show();
                     }
@@ -123,5 +97,38 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void register(View v, String u, String p, String e) {
+        try {
+            final String url = "https://192.168.1.69:44304/api/Account/Register";
+
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = new FormBody.Builder()
+                    .add("Username", u)
+                    .add("Password", p)
+                    .add("Email", e)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .header("content-type", "application/json")
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            String res = response.body().string();
+            String test = response.toString();
+            Toast.makeText(v.getContext(), res, Toast.LENGTH_LONG).show();
+            Toast.makeText(v.getContext(), test, Toast.LENGTH_LONG).show();
+
+            if (res == "Successful") {
+                startActivity(new Intent(getBaseContext(), LoginActivity.class));
+            } else {
+                Toast.makeText(v.getContext(), "Email or username alredy exist!", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception ex) {
+            Toast.makeText(v.getContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }

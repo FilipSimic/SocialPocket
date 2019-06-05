@@ -17,5 +17,5 @@
     <string name="syncTitle">Synchronization</string>
     <string name="syncTwitter">Connect to Twitter</string>
     <string name="syncFacebook">Connect to Facebook</string>
-    <string name="syncText">Plse synchronize your facebook and twitter account with application</string>
+    <string name="syncText">Please synchronize your facebook and twitter account with application</string>
 </resources>

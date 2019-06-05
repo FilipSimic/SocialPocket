@@ -1,0 +1,23 @@
+commit 02493c9b903f33a9708fa7b4e6f09f4bb7b47463
+Author: Filip <filipsimic25@gmail.com>
+Date:   Sun Jun 2 23:37:41 2019 +0200
+
+    Added synchronization UI and fixed landscape view
+
+commit 7f420c3a7b9f6fbc5635f344ee2f42e7b6e07c5d
+Author: Filip <filipsimic25@gmail.com>
+Date:   Sun Jun 2 22:16:34 2019 +0200
+
+    Added registration and forgot password
+
+commit b4e5b1947f464604ab7f8b81533d0d918fbd0404
+Author: Filip <filipsimic25@gmail.com>
+Date:   Thu May 30 18:57:51 2019 +0200
+
+    Added login face detection and new libraries
+
+commit 81f5624d6eb01b977a18532eeb942043a713d236
+Author: Filip <filipsimic25@gmail.com>
+Date:   Wed May 29 15:19:45 2019 +0200
+
+    First commit
