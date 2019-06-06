@@ -10,6 +10,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
@@ -36,6 +38,7 @@ public class MyApplication extends Application
     public void onCreate()
     {
         super.onCreate();
+
         EventBus.getDefault().register(this);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         idApp = pref.getString("idApp", "");
@@ -141,7 +144,7 @@ public class MyApplication extends Application
 
     public String getIdApp() { return idApp; }
 
-    public List<User> getUsers() { return users; }
+    public ArrayList<User> getUsers() { return users; }
 
     public void changePassword(int index, String newPass) {
         users.get(index).setPassword(newPass);

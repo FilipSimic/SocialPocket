@@ -18,4 +18,7 @@
     <string name="syncTwitter">Connect to Twitter</string>
     <string name="syncFacebook">Connect to Facebook</string>
     <string name="syncText">Please synchronize your facebook and twitter account with application</string>
+
+    <string name="facebook_app_id">415720455685948</string>
+    <string name="fb_login_protocol_scheme">fb415720455685948</string>
 </resources>

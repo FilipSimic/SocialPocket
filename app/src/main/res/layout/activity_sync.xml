@@ -63,7 +63,6 @@
         app:layout_constraintStart_toStartOf="@+id/guideline_left"
         app:layout_constraintTop_toBottomOf="@+id/forgot_text" />
 
-
     <Button
         android:id="@+id/btn_facebook"
         android:layout_width="0dp"

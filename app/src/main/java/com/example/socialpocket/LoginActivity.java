@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +31,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -89,10 +89,10 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(!username.isEmpty() && !password.isEmpty()) {
                     //login(username, password);
-                    List<User> users = app.getUsers();
-                    for(User u : users) {
-                        if (username == u.getUsername() && password == u.getPassword()) {
-                            startActivity(new Intent(getBaseContext(), SyncActivity.class));
+                    ArrayList<User> users = app.getUsers();
+                    for(int i=0; i<users.size(); i++) {
+                        if (username.equals(users.get(i).getUsername()) && password.equals(users.get(i).getPassword())) {
+                            startActivity(new Intent(LoginActivity.this, SyncActivity.class));
                         }
                     }
                 } else {
