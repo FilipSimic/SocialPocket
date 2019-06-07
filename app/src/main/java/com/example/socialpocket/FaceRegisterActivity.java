@@ -23,6 +23,7 @@ import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -36,17 +37,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-
-public class FaceLoginActivity extends Activity implements CvCameraViewListener2 {
+public class FaceRegisterActivity extends Activity implements CvCameraViewListener2 {
 
     private static final String    TAG                 = "OCVSample::Activity";
     private static final Scalar    FACE_RECT_COLOR     = new Scalar(0, 255, 0, 255);
@@ -73,7 +64,7 @@ public class FaceLoginActivity extends Activity implements CvCameraViewListener2
 
     private CameraBridgeViewBase   mOpenCvCameraView;
 
-    private boolean tryLogin = false;
+    private boolean saveFace = false;
     private MyApplication app;
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
@@ -128,7 +119,7 @@ public class FaceLoginActivity extends Activity implements CvCameraViewListener2
         }
     };
 
-    public FaceLoginActivity() {
+    public FaceRegisterActivity() {
         mDetectorName = new String[2];
         mDetectorName[JAVA_DETECTOR] = "Java";
         mDetectorName[NATIVE_DETECTOR] = "Native (tracking)";
@@ -143,18 +134,19 @@ public class FaceLoginActivity extends Activity implements CvCameraViewListener2
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.activity_face_login);
+        setContentView(R.layout.activity_face_register);
 
         app = (MyApplication)getApplication();
-        Button login = findViewById(R.id.btn_capture);
-        login.setOnClickListener(new View.OnClickListener() {
+
+        Button capture = findViewById(R.id.btn_registerFace);
+        capture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tryLogin = true;
+                saveFace = true;
             }
         });
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.fd_activity_surface_view);
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.fd_activity_surface_view2);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
@@ -225,11 +217,11 @@ public class FaceLoginActivity extends Activity implements CvCameraViewListener2
 
         Rect[] facesArray = faces.toArray();
 
-        if(tryLogin) {
+        if(saveFace) {
             if(facesArray.length != 1) {
                 this.runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(FaceLoginActivity.this, "Couldn't recognize face", Toast.LENGTH_LONG).show();
+                        Toast.makeText(FaceRegisterActivity.this, "Couldn't save face", Toast.LENGTH_LONG).show();
                     }
                 });
             } else {
@@ -238,58 +230,16 @@ public class FaceLoginActivity extends Activity implements CvCameraViewListener2
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 img.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
-                String current = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                String encoded = app.getFace();
-
-                if(encoded.equals("")) {
-                    this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(FaceLoginActivity.this, "Couldn't recognize face", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } else {
-                    try {
-                        final String url = "http://www.facexapi.com/compare_faces?face_det=1";
-
-                        OkHttpClient client = new OkHttpClient();
-                        RequestBody body = new FormBody.Builder()
-                                .add("img_1", current)
-                                .add("img_2", encoded)
-                                .build();
-
-                        Request request = new Request.Builder()
-                                .url(url)
-                                .post(body)
-                                .header("user_id", getString(R.string.facexID))
-                                .header("user_key", getString(R.string.facexKey))
-                                .build();
-
-                        Response response = client.newCall(request).execute();
-                        final String res = response.body().string();
-                        JsonObject jsonObject = new JsonParser().parse(res).getAsJsonObject();
-                        String c = jsonObject.get("confidence").getAsString();
-                        double confidence = Double.valueOf(c);
-                        if(confidence > 0.75) {
-                            startActivity(new Intent(FaceLoginActivity.this, SyncActivity.class));
-                        } else {
-                            this.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    Toast.makeText(FaceLoginActivity.this, "Couldn't recognize face", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                    } catch (final Exception ex) {
-                        this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(FaceLoginActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
+                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                app.saveFace(encoded);
+                this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(FaceRegisterActivity.this, "Face successfuly saved", Toast.LENGTH_LONG).show();
                     }
-                }
+                });
+                startActivity(new Intent(FaceRegisterActivity.this, LoginActivity.class));
             }
         }
-
-        tryLogin = false;
 
         for (int i = 0; i < facesArray.length; i++) {
             Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);

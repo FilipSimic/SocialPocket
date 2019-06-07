@@ -153,4 +153,16 @@ public class MyApplication extends Application
     public void register(String user, String pass, String email) {
         users.add(new User(user, pass, email));
     }
+
+    public void saveFace(String base64) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("loginFace", base64);
+        editor.apply();
+    }
+
+    public String getFace() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        return pref.getString("loginFace","");
+    }
 }

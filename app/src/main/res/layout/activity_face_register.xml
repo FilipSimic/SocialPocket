@@ -6,14 +6,14 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/btn_capture"
+        android:id="@+id/btn_registerFace"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="80dp"
         android:background="@drawable/button_background"
-        android:text="@string/buttonLogin"
+        android:text="@string/capture"
         android:textAllCaps="false"
         android:textColor="@color/login_form_details_medium"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <org.opencv.android.JavaCameraView
-        android:id="@+id/fd_activity_surface_view"
+        android:id="@+id/fd_activity_surface_view2"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_marginStart="0dp"

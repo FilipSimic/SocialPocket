@@ -17,8 +17,19 @@
     <string name="syncTitle">Synchronization</string>
     <string name="syncTwitter">Connect to Twitter</string>
     <string name="syncFacebook">Connect to Facebook</string>
+    <string name="syncInstagram">Connect to Instagram</string>
+    <string name="addFace">Setup face login</string>
+    <string name="btn_continue">Continue</string>
+    <string name="facebookSuccess">Facebook successfully synchronized</string>
+    <string name="twitterSuccess">Twitter successfully synchronized</string>
+    <string name="instagramSuccess">Instagram successfully synchronized</string>
+    <string name="faceAdded">Face successfully added</string>
+    <string name="capture">Capture</string>
     <string name="syncText">Please synchronize your facebook and twitter account with application</string>
 
     <string name="facebook_app_id">415720455685948</string>
     <string name="fb_login_protocol_scheme">fb415720455685948</string>
+
+    <string name="facexID">fac5027d654c1957afbb</string>
+    <string name="facexKey">5c3ce5b254e6cd170720</string>
 </resources>

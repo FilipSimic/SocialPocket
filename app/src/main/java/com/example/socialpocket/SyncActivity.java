@@ -30,6 +30,7 @@ public class SyncActivity extends AppCompatActivity {
 
 
     CallbackManager callbackManager;
+    MyApplication app;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +44,10 @@ public class SyncActivity extends AppCompatActivity {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        startActivity(new Intent(SyncActivity.this, MainActivity.class));
+                        Button facebook = findViewById(R.id.btn_facebook);
+                        facebook.setBackground(getDrawable(R.drawable.button_success));
+                        facebook.setTextColor(getColor(R.color.btn_success));
+                        facebook.setText(getString(R.string.facebookSuccess));
                     }
 
                     @Override
@@ -58,6 +62,38 @@ public class SyncActivity extends AppCompatActivity {
                 });
 
         setContentView(R.layout.activity_sync);
+
+        app = (MyApplication)getApplication();
+
+        Button instagram = findViewById(R.id.btn_instagram);
+        instagram.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
+
+        Button face = findViewById(R.id.btn_addFace);
+        face.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SyncActivity.this, FaceRegisterActivity.class));
+            }
+        });
+
+        if(app.getFace() != "") {
+            face.setBackground(getDrawable(R.drawable.button_success));
+            face.setTextColor(getColor(R.color.btn_success));
+            face.setText(getString(R.string.faceAdded));
+        }
+
+        Button cont = findViewById(R.id.btn_continue);
+        cont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SyncActivity.this, MainActivity.class));
+            }
+        });
 
         Button twitter = findViewById(R.id.btn_twitter);
         twitter.setOnClickListener(new View.OnClickListener() {
